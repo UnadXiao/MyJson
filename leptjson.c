@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <assert.h>
 #include "leptjson.h"
+#include <assert.h>  /* assert() */
+#include <stdlib.h>  /* NULL */
 
 #define EXPECT(_c, _ch) \
 do { \
@@ -15,7 +15,7 @@ typedef struct {
 
 static void lept_parse_whitespace(lept_context *c) {
     const char *p = c->json;
-    while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\t')
+    while(*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r')
     ++p;
     c->json = p;
 }
@@ -55,6 +55,8 @@ static int lept_parse_value(lept_context* c, lept_value* v) {
             return lept_parse_false(c, v);
         case 't':
             return lept_parse_true(c, v);
+        case '\0':
+            return LEPT_PARSE_EXPECT_VALUE;
         default:
             return LEPT_PARSE_INVALID_VALUE;
     }
@@ -62,19 +64,20 @@ static int lept_parse_value(lept_context* c, lept_value* v) {
 
 int lept_parse(lept_value* v, const char* json) {
     lept_context c;
+    int ret;
     assert(v != NULL);
     c.json = json;
     v->type = LEPT_NULL;
     lept_parse_whitespace(&c);
-    int ret = lept_parse_value(&c, v);
-    const char *p = c.json;
-    lept_parse_whitespace(&c);
-    if(p != c.json)
-        return LEPT_PARSE_ROOT_NOT_SINGULAR;
-    else
-        return ret;
+    if((ret = lept_parse_value(&c, v)) == LEPT_PARSE_OK) {
+        lept_parse_whitespace(&c);
+    	if(*c.json != '\0')
+        	ret = LEPT_PARSE_ROOT_NOT_SINGULAR;
+	}
+    return ret;
 }
 
 lept_type lept_get_type(const lept_value* v) {
+    assert(v != NULL);
     return v->type;
 }
