@@ -50,10 +50,6 @@ static void lept_parse_whitespace(lept_context *c) {
 static int lept_parse_literal(lept_context *c, lept_value *v, const char *json, lept_type type) {
     EXPECT(c, *json);
     ++json;
-    while(*c->json == *json) {
-        json++;
-        c->json++;
-    }
     while(*json != '\0') {
         if(*json != *c->json)
             return LEPT_PARSE_INVALID_VALUE;
