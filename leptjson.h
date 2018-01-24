@@ -15,6 +15,7 @@ typedef enum {
 
 // json是树状结构，lept_value表示各个节点
 typedef struct {
+    double n;
     lept_type type;
 } lept_value;
 
@@ -28,8 +29,9 @@ enum {
 
 // API函数
 
-int lept_parse(lept_value* v, const char* json);
-lept_type lept_get_type(const lept_value* v);
+int lept_parse(lept_value *v, const char *json);
+lept_type lept_get_type(const lept_value *v);
+double lept_get_number(const lept_value *v);
 
 // JSON语法子集
 
@@ -39,5 +41,10 @@ lept_type lept_get_type(const lept_value* v);
 // null = "null"
 // false = "false"
 // true = "true"
+
+// JSON-number = [ "-" ] int [ frac ] [ exp ]
+// int = "0" / digit1-9 * digit
+// frac = "." 1*digit
+// exp = ("e" / "E") ["-" / "+"] 1*digit
 
 #endif  /* LEPTJSON_H__ */

@@ -1,12 +1,15 @@
 #include "leptjson.h"
 #include <assert.h>  /* assert() */
-#include <stdlib.h>  /* NULL */
+#include <stdlib.h>  /* NULL, strtod() */
 
 #define EXPECT(_c, _ch) \
 do { \
 assert(*_c->json == _ch); \
 _c->json++; \
 } while(0)
+
+#define ISDIGIT(_ch) ((_ch) >= '0' && (_ch) < '9')
+#define ISDIGIT1TO9(_ch) ((_ch) >= '1' && (_ch) < '9')
 
 // 减少解析函数之间传递多个参数
 typedef struct {
@@ -32,6 +35,16 @@ static int lept_parse_literal(lept_context *c, lept_value *v, const char *litera
     return LEPT_PARSE_OK;
 }
 
+static int lept_parse_number(lept_context *c, lept_value *v) {
+    char *end;
+    v->n = strtod(c->json, &end);
+    if(c->json == end)
+        return LEPT_PARSE_INVALID_VALUE;
+    c->json  = end;
+    v->type = LEPT_NUMBER;
+    return LEPT_PARSE_OK;
+}
+
 static int lept_parse_value(lept_context* c, lept_value* v) {
     switch(*c->json) {
         case 'n':
@@ -43,7 +56,7 @@ static int lept_parse_value(lept_context* c, lept_value* v) {
         case '\0':
             return LEPT_PARSE_EXPECT_VALUE;
         default:
-            return LEPT_PARSE_INVALID_VALUE;
+            return lept_parse_number(c, v);
     }
 }
 
@@ -65,4 +78,9 @@ int lept_parse(lept_value* v, const char* json) {
 lept_type lept_get_type(const lept_value* v) {
     assert(v != NULL);
     return v->type;
+}
+
+double lept_get_number(const lept_value *v) {
+    assert(v != NULL && v->type == LEPT_NUMBER);
+    return v->n;
 }
