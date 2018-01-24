@@ -8,8 +8,6 @@ assert(*_c->json == _ch); \
 _c->json++; \
 } while(0)
 
-#define ISDIGIT(_ch) ((_ch) >= '0' && (_ch) < '9')
-#define ISDIGIT1TO9(_ch) ((_ch) >= '1' && (_ch) < '9')
 
 // 减少解析函数之间传递多个参数
 typedef struct {
@@ -69,8 +67,10 @@ int lept_parse(lept_value* v, const char* json) {
     lept_parse_whitespace(&c);
     if((ret = lept_parse_value(&c, v)) == LEPT_PARSE_OK) {
         lept_parse_whitespace(&c);
-    	if(*c.json != '\0')
+        if (*c.json != '\0') {
+            v->type = LEPT_NULL;
         	ret = LEPT_PARSE_ROOT_NOT_SINGULAR;
+        }
 	}
     return ret;
 }

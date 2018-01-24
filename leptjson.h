@@ -22,9 +22,10 @@ typedef struct {
 // 返回值
 enum {
     LEPT_PARSE_OK = 0,
-    LEPT_PARSE_EXPECT_VALUE,        // 只包含ws
-    LEPT_PARSE_INVALID_VALUE,       // ws value ws之后还有其他字符
-    LEPT_PARSE_ROOT_NOT_SINGULAR        // value不在三种literal中
+    LEPT_PARSE_EXPECT_VALUE,
+    LEPT_PARSE_INVALID_VALUE,
+    LEPT_PARSE_ROOT_NOT_SINGULAR,
+    LEPT_PARSE_NUMBER_TOO_BIG
 };
 
 // API函数
