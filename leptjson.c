@@ -35,7 +35,7 @@ static int lept_parse_literal(lept_context *c, lept_value *v, const char *litera
 
 static int lept_parse_number(lept_context *c, lept_value *v) {
     char *end;
-    v->n = strtod(c->json, &end);
+    v->u.n = strtod(c->json, &end);
     if(c->json == end)
         return LEPT_PARSE_INVALID_VALUE;
     c->json  = end;
@@ -82,5 +82,15 @@ lept_type lept_get_type(const lept_value* v) {
 
 double lept_get_number(const lept_value *v) {
     assert(v != NULL && v->type == LEPT_NUMBER);
-    return v->n;
+    return v->u.n;
+}
+
+void letp_set_string(lept_value *v, const char *s, size_t len) {
+    assert(v != NULL && (s != NULL || len == 0));
+    lept_free(v);
+    v->u.s.s = (char *) malloc (len + 1);
+    memccpy(v->u.s.s, s, len);
+    v->u.s.s[len] = '\0';
+    v->u.s.len = len;
+    v->type = LEPT_STRING;
 }
