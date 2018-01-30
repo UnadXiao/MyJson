@@ -14,8 +14,12 @@ typedef enum {
 } lept_type;
 
 // json是树状结构，lept_value表示各个节点
+// lept_value事实上是一种变体类型(variant type)：通过type类型决定那些成员是有效的
 typedef struct {
-    double n;
+    union {
+        struct { char *s; size_t len; } s;       // string
+        double n;
+    } u;
     lept_type type;
 } lept_value;
 
@@ -47,5 +51,21 @@ double lept_get_number(const lept_value *v);
 // int = "0" / digit1-9 * digit
 // frac = "." 1*digit
 // exp = ("e" / "E") ["-" / "+"] 1*digit
+
+// JSON-string = quotation-mark *char quotation-mark
+// char = unescaped /
+//    escape (
+//        %x22 /          ; "    quotation mark  U+0022
+//        %x5C /          ; \    reverse solidus U+005C
+//        %x2F /          ; /    solidus         U+002F
+//        %x62 /          ; b    backspace       U+0008
+//        %x66 /          ; f    form feed       U+000C
+//        %x6E /          ; n    line feed       U+000A
+//        %x72 /          ; r    carriage return U+000D
+//        %x74 /          ; t    tab             U+0009
+//        %x75 4HEXDIG )  ; uXXXX                U+XXXX
+// escape = %x5C          ; \
+// quotation-mark = %x22  ; "
+// unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
 
 #endif  /* LEPTJSON_H__ */
