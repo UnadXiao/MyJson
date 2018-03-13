@@ -20,8 +20,10 @@ static int test_pass = 0;
 
 #define EXPECT_EQ_INT(expect, actual) EXPECT_EQ_BASE((expect)==(actual), expect, actual, "%d")
 
-//  Êä³öÊ±¿ÉÊ¹ÓÃ%f£¨ÆÕÍ¨·½Ê½£©¡¢%e/%E£¨Ö¸Êı·½Ê½£©»ò%g/%G£¨×Ô¶¯Ñ¡Ôñ£©
+//  è¾“å‡ºæ—¶å¯ä»¥ä½¿ç”¨%f(æ™®é€šæ–¹å¼)ã€%e/%E(æŒ‡æ•°æ–¹å¼)æˆ–%g/%G(è‡ªåŠ¨é€‰æ‹©)
 #define EXPECT_EQ_DOUBLE(_expect, _actual) EXPECT_EQ_BASE((_expect)==(_actual), _expect, _actual, "%.17g")
+
+#define EXPECT_EQ_STRING(_expect, _acutal, _len) EXPECT_EQ_BASE((_expect)==(_acutal), _expect, _actual, "");
 
 #define TEST_ERROR(_error, _json) \
     do { \
@@ -62,8 +64,6 @@ static void test_parse_false() {
     EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(&v));
 }
 
-
-
 static void test_parse_number() {
     TEST_NUMBER(0.0, "0");
     TEST_NUMBER(0.0, "-0");
@@ -94,6 +94,16 @@ static void test_parse_number() {
     TEST_NUMBER(-2.2250738585072014e-308, "-2.2250738585072014e-308");
     TEST_NUMBER( 1.7976931348623157e+308, "1.7976931348623157e+308");  /* Max double */
     TEST_NUMBER(-1.7976931348623157e+308, "-1.7976931348623157e+308");
+}
+
+static void test_parse_string() {
+    lept_value v;
+    lept_init(&v);
+    lept_set_string(&v, "", 0);
+    EXPECT_EQ_STRING("", lept_get_string(&v), lept_get_string_length(&v));
+    lept_set_string(&v, "Hello", 5);
+    EXPECT_EQ_STRING("Hello", lept_get_string(&v), lept_get_string_length(&v));
+    lept_free(&v);
 }
 
 static void test_parse_expect_value() {
