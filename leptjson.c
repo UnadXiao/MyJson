@@ -163,3 +163,46 @@ static void* lept_context_pop(lept_context *c, size_t size) {
     assert(c->top >= size);
     return c->stack + (c->top -= size);
 }
+
+static int lept_parse_string(lept_context *c, lept_value *v) {
+    size_t head = c->top, len;      // 备份栈顶，用于计算字符串长度
+    cosnt char *p;
+    EXPECT(c, '\"');
+    p = c->json;
+    for(;;) {
+        char ch = *p++;
+        switch(ch) {
+            case '\"':
+                len = c->top - head;
+                letp_set_string(v, (const char*)lept_context_pop(c, len), len);
+                c->json = p;        // 这里不明白
+            return LEPT_PARSE_OK;
+            case '\0':
+                c->top = head;
+                return LEPT_PARSE_MISS_QUOTATION_MARK;
+            default:
+                PUTC(c, ch);
+        }
+    }
+}
+
+static int lept_get_boolean(const lept_value *v) {
+    assert(v != NULL && (v->type == LEPT_TRUE || v->type == LEPT_FALSE));
+    return v->type == LEPT_TRUE;        // v类型是布尔类型，返回LEPT_TRUE是布尔类型。
+}
+
+static void lept_set_boolean(lept_value *v, int b) {
+    lept_free(v);
+    v->type = b ? LEPT_TRUE : LEPT_FALSE;
+}
+
+static double lept_get_number(const lept_value *v) {
+    assert(v != NULL && v->type == LEPT_NUMBER);
+    return v->u.n;
+}
+
+static void lept_set_number(lept_value *v, double n) {
+    lept_free(v);
+    v->u.n = n;
+    v->type = LEPT_NUMBER;
+}

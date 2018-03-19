@@ -55,6 +55,7 @@ static void test_parse_true() {
     v.type = LEPT_FALSE;
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "true"));
     EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(&v));
+    EXPECT_EQ_INT(LEPT_TRUE, lept_get_boolean(&v));
 }
 
 static void test_parse_false() {
@@ -62,6 +63,7 @@ static void test_parse_false() {
     v.type = LEPT_TRUE;
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "false"));
     EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(&v));
+    EXPECT_EQ_INT(LEPT_FALSE, lept_get_boolean(&v));
 }
 
 static void test_parse_number() {
