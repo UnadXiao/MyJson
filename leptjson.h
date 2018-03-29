@@ -15,10 +15,12 @@ typedef enum {
     LEPT_OBJECT
 } lept_type;
 
+typedef struct lept_value lept_value;       // lept_value使用了自身类型的指针，所以需要向前声明
 // json是树状结构，lept_value表示各个节点
 // lept_value事实上是一种变体类型(variant type)：通过type类型决定那些成员是有效的
 typedef struct {
     union {
+        struct { lept_value *e, size_t size} a;     // array size元素个数
         struct { char *s; size_t len; } s;       // string
         double n;
     } u;
@@ -52,6 +54,8 @@ int lept_get_boolean(const lept_value *v);
 void lept_set_boolean(lept_value *v, int b);
 double lept_get_number(const lept_value *v);
 void lept_set_number(lept_value *v, double n);
+size_t lept_get_array_size(const lept_value *v);
+lept_value *lept_get_array_element(const lept_value *v, size_t index);
 
 const char* lept_get_string(const lept_value *v);
 size_t lept_get_string_length(const lept_value *v);
@@ -86,5 +90,13 @@ void lept_set_string(lept_value *v, const char *s, size_t len);
 // escape = %x5C          ; \
 // quotation-mark = %x22  ; "
 // unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
+
+// JSON-array = %x5B ws [ value *( ws %x2C ws value ) ] ws %x5D
+// %x5B ; [
+// %x5D ; ]
+// %x2C ; ,
+// ws = *(%x20 / %x09 / %x0A / %x0D)
+// value = JSON-text / JSON-number / JSON-string / JSON-value
+// 
 
 #endif  /* LEPTJSON_H__ */
