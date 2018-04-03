@@ -38,30 +38,36 @@ static int test_pass = 0;
 // #define EXPECT_FALSE(_actual) EXPECT_EQ_INT(false, _actual)
 
 static void test_parse_null() {
+    printf("Parse null ...\n");
     lept_value v;
     lept_init(&v);
     lept_set_boolean(&v, 0);
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "null"));
     EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
     lept_free(&v);
+    printf("Done\n");
 }
 
 static void test_parse_true() {
+    printf("Parse true ...\n");
     lept_value v;
     lept_init(&v);
     lept_set_boolean(&v, 0);
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "true"));
     EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(&v));
     lept_free(&v);
+    printf("Done\n");
 }
 
 static void test_parse_false() {
+    printf("Parse false ...\n");
     lept_value v;
     lept_init(&v);
     lept_set_boolean(&v, 1);
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "false"));
     EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(&v));
     lept_free(&v);
+    printf("Done\n");
 }
 #define TEST_NUMBER(_expect, _json) \
     do { \
@@ -74,6 +80,7 @@ static void test_parse_false() {
     } while(0)
 
 static void test_parse_number() {
+    printf("Parse number ...\n");
     TEST_NUMBER(0.0, "0");
     TEST_NUMBER(0.0, "-0");
     TEST_NUMBER(0.0, "-0.0");
@@ -103,6 +110,7 @@ static void test_parse_number() {
     TEST_NUMBER(-2.2250738585072014e-308, "-2.2250738585072014e-308");
     TEST_NUMBER( 1.7976931348623157e+308, "1.7976931348623157e+308");  /* Max double */
     TEST_NUMBER(-1.7976931348623157e+308, "-1.7976931348623157e+308");
+    printf("Done\n");
 }
 
 #define TEST_STRING(expect, json)\
@@ -116,6 +124,7 @@ static void test_parse_number() {
     } while(0)
 
 static void test_parse_string() {
+    printf("Parse string ...\n");
     TEST_STRING("", "\"\"");
     TEST_STRING("Hello", "\"Hello\"");
     TEST_STRING("Hello\nWorld", "\"Hello\\nWorld\"");
@@ -126,6 +135,7 @@ static void test_parse_string() {
     TEST_STRING("\xE2\x82\xAC", "\"\\u20AC\""); /* Euro sign U+20AC */
     TEST_STRING("\xF0\x9D\x84\x9E", "\"\\uD834\\uDD1E\"");  /* G clef sign U+1D11E */
     TEST_STRING("\xF0\x9D\x84\x9E", "\"\\ud834\\udd1e\"");  /* G clef sign U+1D11E */
+    printf("Done\n");
 }
 
 
@@ -140,11 +150,14 @@ static void test_parse_string() {
     } while(0)
 
 static void test_parse_expect_value() {
+    printf("Parse expect value ...\n");
     TEST_ERROR(LEPT_PARSE_EXPECT_VALUE, "");
     TEST_ERROR(LEPT_PARSE_EXPECT_VALUE, " ");
+    printf("Done\n");
 }
 
 static void test_parse_invalid_value() {
+    printf("Parse invalid value ...\n");
     TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "nul");
     TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "?");
 
@@ -157,40 +170,52 @@ static void test_parse_invalid_value() {
     TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "inf");
     TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "NAN");
     TEST_ERROR(LEPT_PARSE_INVALID_VALUE, "nan");
+    printf("Done\n");
 }
 
 static void test_parse_root_not_singular() {
+    printf("Parse root not singular ...\n");
     TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "null x");
 
     /* invalid number */
     TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "0123"); /* after zero should be '.' or nothing */
     TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "0x0");
     TEST_ERROR(LEPT_PARSE_ROOT_NOT_SINGULAR, "0x123");
+    printf("Done\n");
 }
 
 static void test_parse_number_too_big() {
+    printf("Parse number to big ...\n");
     TEST_ERROR(LEPT_PARSE_NUMBER_TOO_BIG, "1e309");
     TEST_ERROR(LEPT_PARSE_NUMBER_TOO_BIG, "-1e309");
+    printf("Done\n");
 }
 
 static void test_parse_missing_quotation_mark() {
+    printf("Parse missing quotation ...\n");
     TEST_ERROR(LEPT_PARSE_MISS_QUOTATION_MARK, "\"");
     TEST_ERROR(LEPT_PARSE_MISS_QUOTATION_MARK, "\"abc");
+    printf("Done\n");
 }
 
 static void test_parse_invalid_string_escape() {
+    printf("Parse invalid string escape ...\n");
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_ESCAPE, "\"\\v\"");
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_ESCAPE, "\"\\'\"");
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_ESCAPE, "\"\\0\"");
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_ESCAPE, "\"\\x12\"");
+    printf("Done\n");
 }
 
 static void test_parse_invalid_string_char() {
+    printf("Parse invalid string char ...\n");
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_CHAR, "\"\x01\"");
     TEST_ERROR(LEPT_PARSE_INVALID_STRING_CHAR, "\"\x1F\"");
+    printf("Done\n");
 }
 
 static void test_parse_invalid_unicode_hex() {
+    printf("Parse invalid unicode hex ...\n");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_HEX, "\"\\u\"");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_HEX, "\"\\u0\"");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_HEX, "\"\\u01\"");
@@ -204,25 +229,31 @@ static void test_parse_invalid_unicode_hex() {
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_HEX, "\"\\u000/\"");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_HEX, "\"\\u000G\"");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_HEX, "\"\\u 123\"");
+    printf("Done\n");
 }
 
 static void test_parse_invalid_unicode_surrogate() {
+    printf("Parse invalid unicode surrogate ...\n");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE, "\"\\uD800\"");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE, "\"\\uDBFF\"");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE, "\"\\uD800\\\\\"");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE, "\"\\uD800\\uDBFF\"");
     TEST_ERROR(LEPT_PARSE_INVALID_UNICODE_SURROGATE, "\"\\uD800\\uE000\"");
+    printf("Done\n");
 }
 static void test_access_null() {
+    printf("Access null ...\n");
     lept_value v;
     lept_init(&v);
     lept_set_string(&v, "a", 1);
     lept_set_null(&v);
     EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
     lept_free(&v);
+    printf("Done\n");
 }
 
 static void test_access_boolean() {
+    printf("Access boolean ...\n");
     lept_value v;
     lept_init(&v);
     lept_set_string(&v, "a", 1);
@@ -231,18 +262,22 @@ static void test_access_boolean() {
     lept_set_boolean(&v, LEPT_NULL);
     EXPECT_FALSE(lept_get_boolean(&v));
     lept_free(&v);
+    printf("Done\n");
 }
 
 static void test_access_number() {
+    printf("Access number ...\n");
     lept_value v;
     lept_init(&v);
     lept_set_string(&v, "a", 1);
     lept_set_number(&v, 1.23);
     EXPECT_EQ_DOUBLE(1.23, lept_get_number(&v));
     lept_free(&v);
+    printf("Done\n");
 }
 
 static void test_access_string() {
+    printf("Access string ...\n");
     lept_value v;
     lept_init(&v);
     lept_set_string(&v, "", 0);
@@ -250,6 +285,7 @@ static void test_access_string() {
     lept_set_string(&v, "Hello", 5);
     EXPECT_EQ_STRING("Hello", lept_get_string(&v), lept_get_string_length(&v));
     lept_free(&v);
+    printf("Done\n");
 }
 
 // VS编译器版本打印size_t格式和标准不一样
@@ -262,12 +298,29 @@ static void test_access_string() {
 #endif
 
 static void test_parse_array() {
+    printf("Parse array ...\n");
     lept_value v;
     lept_init(&v);
     EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "[ ]"));
     EXPECT_EQ_INT(LEPT_ARRAY, lept_get_type(&v));
     EXPECT_EQ_SIZE_T(0, lept_get_array_size(&v));
     lept_free(&v);
+
+    EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "[ null, false, true, 123, \"abc\" ]"));
+    EXPECT_EQ_INT(LEPT_NULL, lept_get_type(lept_get_array_element(&v, 0)));
+    EXPECT_EQ_INT(LEPT_FALSE, lept_get_type(lept_get_array_element(&v, 1)));
+    EXPECT_EQ_INT(LEPT_TRUE, lept_get_type(lept_get_array_element(&v, 2)));
+    EXPECT_EQ_INT(LEPT_NUMBER, lept_get_type(lept_get_array_element(&v, 3)));
+    EXPECT_EQ_DOUBLE(123, lept_get_number(lept_get_array_element(&v, 3)));
+    EXPECT_EQ_INT(LEPT_STRING, lept_get_type(lept_get_array_element(&v, 4)));
+    EXPECT_EQ_STRING("abc", lept_get_string(lept_get_array_element(&v, 4)), 3);
+    lept_free(&v);
+
+    EXPECT_EQ_INT(LEPT_PARSE_OK, lept_parse(&v, "[ [], [ 0 ], [ 0, 1 ], [ 0, 1, 2 ] ]"));
+    for(int i=0; i<4; ++i)
+        EXPECT_EQ_INT(LEPT_ARRAY, lept_get_type(lept_get_array_element(&v, i)));
+    lept_free(&v);
+    printf("Done\n");
 }
 
 static void test_parse() {
@@ -286,6 +339,7 @@ static void test_parse() {
     test_parse_invalid_string_char();
     test_parse_invalid_unicode_hex();
     test_parse_invalid_unicode_surrogate();
+    test_parse_array();
 }
 
 static void test_access() {
@@ -294,7 +348,7 @@ static void test_access() {
     test_access_number();
     test_access_string();
 }
-
+//
 int main(int argc, char* argv[]) {
 #ifdef _WINDOWS
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

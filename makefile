@@ -1,8 +1,16 @@
-test.exe: leptjson.o test.o
-	gcc leptjson.o test.o -o test.exe
+NAME:=test.exe
+SRC:=leptjson.c leptjson.h test.c
+OBJ:=leptjson.o test.o
 
-leptjson.o: leptjson.c leptjson.h
-	gcc leptjson.c -c
+$(NAME): $(OBJ)
+	gcc $^ -o $@
+	del *.o *.gch
 
-test.o: test.c
-	gcc test.c -c
+$(OBJ): $(SRC)
+	gcc $^ -c
+
+clean:
+	del $(NAME)
+	del *.o
+run:
+	$(NAME)

@@ -18,9 +18,9 @@ typedef enum {
 typedef struct lept_value lept_value;       // lept_value使用了自身类型的指针，所以需要向前声明
 // json是树状结构，lept_value表示各个节点
 // lept_value事实上是一种变体类型(variant type)：通过type类型决定那些成员是有效的
-typedef struct {
+typedef struct lept_value {
     union {
-        struct { lept_value *e, size_t size} a;     // array size元素个数
+        struct { lept_value *e; size_t size; } a;     // array size元素个数
         struct { char *s; size_t len; } s;       // string
         double n;
     } u;
@@ -38,7 +38,8 @@ enum {
     LEPT_PARSE_INVALID_STRING_ESCAPE,
     LEPT_PARSE_INVALID_STRING_CHAR,
     LEPT_PARSE_INVALID_UNICODE_HEX,
-    LEPT_PARSE_INVALID_UNICODE_SURROGATE
+    LEPT_PARSE_INVALID_UNICODE_SURROGATE,
+    LEPT_PARSE_MISS_COMMA_OR_SQUARE_BRACKET
 };
 
 // API函数
